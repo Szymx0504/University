@@ -10,6 +10,7 @@ discrete.histogram(bike, freq=T)
 plot(table(bike)/length(bike))
 pie(table(bike))
 
+ozone
 oz=ozone$ozone
 oz
 
@@ -22,4 +23,6 @@ table(cut(oz,breaks=br))
 
 hist(oz, breaks=br, prob=T, main="oz", xlab="X label")
 pie(table(cut(oz,6)))
+pie(table(cut(oz,br)))
 
+hist(oz, freq=T)
