@@ -62,10 +62,10 @@ prob[B==7]
 #P(B>5)
 sum(prob[B>5])
 #E(B)
-expect = sum(prob * b); expect
+expect = sum(prob * B); expect
 n * p
 # SD(B)
-variance = sum(b^2 * prob) - expect^2
+variance = sum(B^2 * prob) - expect^2
 std = sqrt(variance)
 std
 

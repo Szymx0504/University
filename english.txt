@@ -1,0 +1,27 @@
+Encryption protocols are the set of rules setting out how the algorithms should be used to secure information
+
+Popular encryption protocols:
+
+SSL/TLS
+Use: Secure websites (HTTPS), web forms, payments
+How:
+Handshake: Client and server agree on encryption (cipher)
+Server Authentication: Server sends its SSL certificate from a CA
+Key Exchange: Client verifies certificate, then sends a random string encrypted with the server's public key. Both sides generate a session key
+Secure Transfer: All data encrypted with the session key
+
+SSH
+Use: Secure remote login, command-line access, file transfers
+How:
+Connection: Client connects to server
+Server Verification: Server proves its identity with a host key.
+Secure Channel: A secure, encrypted tunnel is established
+Client Login: User authenticates via password or public/private key pair
+Session: All commands and data are encrypted
+
+IPsec
+Use: VPNs, secure network-to-network connections
+How:
+Key Exchange (IKE): Devices authenticate each other and negotiate encryption keys
+Data Protection: ESP encrypts and authenticates the data packets and AH authenticates packets only (no encryption).
+Secure Transfer: Creates a secure "tunnel" for all data between two points on a network.

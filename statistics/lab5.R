@@ -63,6 +63,7 @@ hist(data,xlim=c(0,20), freq=F)
 curve(dnorm(x,mu,sig), from=0, to=20, add=TRUE)
 
 #11? or 10c
+n=100; p=0.25
 prob=dbinom(x,n,p)
 sum(prob[x<=15])
 
@@ -75,7 +76,7 @@ x=rnorm(30)
 vectormean = rep(0,0)
 for(i in 1:200){
   X=rnorm(30)
-  vectormean[i] = mean(x)
+  vectormean[i] = mean(X)
 }
 vectormean
 hist(vectormean, freq=F)

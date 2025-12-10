@@ -1,0 +1,6 @@
+setwd("C:/Users/szymo/Documents/University/semester 3/statistics")
+#install.packages("BSDA")
+library(BSDA)
+
+install.packages("arm")
+library("arm")

@@ -1,0 +1,358 @@
+*******
+TOPIC 1
+*******
+
+Encapsulation - hiding implementation details of a class. Publicly available class members create the class's programming interface. Members hidden from other classes can be changed without affecting external code. Encapsulation is enforced by access modifiers (public, protected, private)
+public (+): visible to everyone
+protected (#): visible to its class and subclasses
+private (-): visible only to its class
+package (~): visible to all classes in package
+
+Inheritance - defining a subclass as a specialization of an existing class. A subclass inherits its attributes and methods from its parent. The subclass can have additional attributes and methods and redefine inherited ones.
+
+Abstraction - working with objects on an abstraction level adequate for a given problem (e.g. treating an instance of class Pixel as Point whenever Pixel's own attributes and methods are irrelevant). Leads to more general code. Makes creating collections of objects easier.
+
+Polymorphism - behaving as one does even if one is treated at a more general level. Ties together inheritance (generalization) and abstraction. Leads to late binding
+Late binding - the decision about which method to run is made upon execution of that method, not during compilation
+
+// GENERAL level (Abstract class)
+public abstract class PaymentMethod {
+    protected String cardNumber;
+    
+    // Abstract method - each payment behaves differently
+    public abstract void processPayment(double amount);
+    
+    // Common behavior
+    public void validateCard() {
+        System.out.println("Validating card: " + cardNumber);
+    }
+}
+
+// SPECIFIC implementations
+public class CreditCard extends PaymentMethod {
+    public void processPayment(double amount) {
+        System.out.println("Processing CREDIT card payment of $" + amount);
+        System.out.println("Charging interest fees...");
+    }
+}
+
+public class PaymentProcessor {
+    // This method treats all payments at the GENERAL level
+    public void takePayment(PaymentMethod payment, double amount) {
+        payment.validateCard();      // Common behavior
+        payment.processPayment(amount);  // ← POLYMORPHISM!
+        // At compile time: "I'll call processPayment on a PaymentMethod"
+        // At runtime: "Oh, this is actually a CreditCard/DebitCard/PayPal!"
+    }
+}
+
+*******
+TOPIC 2
+*******
+
+Class consists of a name, attributes and operations
+
+Class properties are denoted as attributes or associations with other classes
+visibility name : type[arity] {constraints} = default
+- id : String[1] {not null, unique}
+- grades: Grade[0..*] {unordered}
+- price : double[1] = 0.0 {price >= 0}
+
+Derived attribute: attribute that can be computed based on the values of others attributes
+Static members are parts of classes not instances: -MAX_BOOKINGS: int
+
+Methods are operations (functions) that can be invoked on a class object
+visibility name(param1, param2,…) : type {constraints}
+and for each param: direction name:type[arity] = default
+Parameter directions: in, out, inout, return
++ withdraw(in amount : double[1]) : boolean[1]
++ getAccountInfo(out info : StringBuilder[1]) : void {duration < 100ms}
++ applyBonus(inout amounts: double[1..*]) : void
++ calculateInterest() : double[1] {value >= 0}
+
+*IMPORTANT*
+In UML, we don't show the reference fields explicitly (relationship lines replace reference fields)
+
+(a simple arrow) A ─ ─ ─> (uses) B, Customer ─ ─ ─> Order (temporary use, no stored reference)
+A dependency is the simplest and weakest relationship that can connect a pair of classes. It usually means that one class uses/affects/influences another
+
+(a simple line) A ─── (knows about/uses) B
+Professor 1 ─── * Course (holds a reference to the other class)
+Associations represent temporary relations between objects of two classes. Two associated objects are independent. Associations are used interchangeably with attributes to describe class properties
+
+Navigability defines which object sees which
+Airport 1 ───> 1..* Airline
+the Airport knows which Airlines it hosts, whereas the Airline does not refer to the Airport
+If navigability is bi-directional the arrows are omitted:
+Airport 1..* ─── 1..* Airline
+
+Association classes are classes that describe the properties of an association. They have access to the other objects partaking in the relations
+	    Booking
+	       |
+	       |
+	       |
+Passenger * ───── * Flight
+
+Aggregation is a part-whole relationship, where the part can belong to several containers and the container does not dictate the life of the part
+A ◇───── (uses) B
+Club ◇───── * Member (club "has" members, but members exist independently, members can belong to multiple clubs)
+
+Composition is a part-whole relationship. It is the strongest relation between a pair of classes. The child object cannot exist without the parent
+A ◆───── (owns/contains) B
+House ◆───── 1..* Room (room cannot exist without house, room belongs to exactly one house, deleting house deletes all rooms)
+
+
+Generalization models class hierarchies, from more general to more specialized ones. It is a way of extracting common properties and operations
+Shape ◁───── Circle 
+*!*Arrow points FROM child TO parent*!*
+
+Classification defines the relations between an object and its class. Examples include: overlapping (or), disjoint (xor), complete, incomplete
+
+
+Abstract classes are classes that cannot instantiate objects. Therefore abstract classes require subclasses
+Payment ◁───── Cash
+
+
+Interfaces are sets of expected operations without implementation
+Implementing an interface is denoted with ◁─ ─ ─ ─
+Payable ◁─ ─ ─ ─ Cash
+
+Generic types are classes that take other classes as parameters. They are used to create data structures and operations that work the same way for different types. Great way of modelling collections.
+
+public class Box<T> {
+    private T content;
+    
+    public void put(T item) {
+        this.content = item;
+    }
+    
+    public T get() {
+        return content;
+    }
+}
+
+Box<String> stringBox = new Box<>();    // T becomes String
+stringBox.put("Hello");                 // Can only put Strings
+String text = stringBox.get();          // Get back a String
+
+Box<Integer> numberBox = new Box<>();   // T becomes Integer  
+numberBox.put(42);                      // Can only put Integers
+int num = numberBox.get();              // Get back an Integer
+
+*******
+TOPIC 3
+*******
+
+Class design principles (SOLID):
+	Single responsibility
+	Open-closed
+	Liskov substitution
+	Interface segregation
+	Dependency inversion
+Package design principles:
+	Release reuse
+	Common closure
+	Common reuse
+	Acyclic dependencies
+	Stable dependencies
+	Stable abstractions
+
+Single Responsibility principle:
+A class should have one, and only one reason to change. Small classes, precise names
+
+Open/Closed principle:
+An entity should be open for extension but closed for modification. Extend functionality by new code instead of changing existing code
+
+Liskov Substitution principle:
+Any derived class should be able to substitute its parent class without consumer noticing it. Every part of the code should get the expected result no matter what subtype you send to it
+
+Interface Segregation principle:
+No client should be forced to depend on methods it does not use. Replace fat interfaces with many specific interfaces
+
+Dependency Inversion principle:
+High-level modules should not depend on low-level modules. Both should depend on abstractions. Never depend on anything concrete. Able to change an implementation without changing high-level code
+	
+*******
+TOPIC 4
+*******
+
+Design pattern - a solution to a common software problem in context (encapsulation, subclassing, exceptions...)
+Elements of a design pattern: Name, Problem, Solution, Consequences
+
+*IMPORTANT*
+Gang of Four Patterns:
+Creational patterns (abstracting the object-instantiation process): Factory Method, Abstract Factory, Singleton
+Structural patterns (how objects/classes can be combined to form larger structures): Adapter, Decorator, Façade, Proxy
+Behavioural patterns (communication between objects): Strategy, Observer
+
+Strategy: objects that hold alternate algorithms to solve a problem. Defines a family of algorithms, encapsulates each one and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it
+Duck ◆─────(has an) interface
+
+Observer: objects that notify when their state changes. Defines a one-to-many dependency between objects so that when one object (subject) changes state, all of its dependents (observers) are notified and updated automatically
+
+Singleton: Ensure a class has only one instance and provide a global point of access to it.
+
+Decorator: Objects that wrap around other objects to add useful features. Attaches additional responsibilities to an object dynamically. Decorators provide a flexible alternative to sub-classing for extending functionality
+
+Proxy: Provides a surrogate or placeholder for another object to control access to it. Similar to the Decorator pattern. A Decorator adds behaviour to a class whereas Proxy controls access to it
+
+Facade: Objects that orchestrate other objects. Provides a unified interface to a set of interfaces in a subsystem. Facade defines a higher level interface that makes the subsystem easier to use
+
+Adapter: Objects that translate one API into another. Converts the interface of a class into another interface the clients expect. Adapter lets classes work together that could not otherwise because of incompatible interfaces
+
+*******
+TOPIC 5
+*******
+
+Creating new threads:
+extends Thread, (new ourClass()).start(), looks for run() method
+implements Runnable, (new Thread(new ourClass())).start(), looks for run() method
+
+The volatile keyword turns off variable caching within threads. Volatile is especially useful when a variable can be modified by several threads and using cached values could lead to incorrect results
+
+setPriority() - Threads can have their priorities set to different levels, but this will not help in any way with synchronization
+sleep() - Suspends a thread for a given amount of time, this should not be used for synchronization
+join() - Suspends a thread until a given different thread (passed as a parameter) finishes its processing
+sleep() and join() can be terminated early when the interrupt() method is called
+
+wait() - Invoking it on a thread means that the thread is suspended until a different process calls notify()
+notifyAll() - Wakes up all suspended threads
+
+Critical regions - blocks of code that mutually exclude access by using a monitor
+in Java:
+synchronized (someObj){
+	// code synced by some obj
+}
+or
+public synchronized foo(){
+	// code synced by this, that is the object foo() belongs to
+}
+synchronized = Binary Semaphore
+
+More advanced synchronization tools:
+CyclicBarrier: waits for a given number of threads
+Semaphore: makes sure that a given code fragment is available to only one (or another predefined number of) thread(s)
+ReentrantReadWriteLock: helps solve the readers-writers problem. Allows multiple readers to co-exist. A writer excludes the possibility of having other writers or readers
+
+*******
+TOPIC 6
+*******
+
+Reflection - Enables programmers to read information about classes and objects at runtime. Useful for loading classes dynamically. Even if we know nothing about a class we can: create a new instance, get and set field values, invoke methods, create and modify arrays
+Regular programs do not need reflections. Programs that process programs need it (Debuggers, IDEs etc)
+
+Annotations - Additional information (metadata) for compilers and programs that use reflection. One can create custom annotations by implementing an interface or use one of several built-in ones
+
+Anonymous types: classes without names. While creating an anonymous type you have to instantly create its instance. Useful for temporary data containers
+
+Autotyping: only local variables, instant assignment, can be used with anonymous types
+var question = "And the answer is?";
+var answer = 23;
+var conditionally = cond ? 500 : 600;
+
+Lambda expressions: Way of creating anonymous methods. Great for creating temporary operations
+(x, y) -> {
+	int result = x + y;
+	return result;
+}
+
+Streams (inspiration taken from functional languages)
+Arrays.asList("a1", "a2", "b1").stream().filter(s -> s.startsWith("a")).map(String::toUpperCase).sorted().forEach(System.out::println);
+
+Method reference: when everything a lambda does is call an existing method, you can use a method reference
+Arrays.sort(publications, Person::compareByAge);
+
+Lambda expressions are useful for filtering conditions, sorting, querying collections, data aggregations, event handlers and passing simple methods as parameters
+
+Extension method example: 2.IsEven() (done in public static class IntEX)
+Extension methods can be used to extend interfaces
+
+Virtual extension methods (defined in interfaces):
+interface Person {
+	default void sayHello(){
+		System.out.println("Hello!");
+	}
+}
+
+LINQ is a declarative query language inside C#
+LINQ queries are equivalent to streams of lambda expressions, most of which are extension methods
+
+C# gives a lot of control over what can or cannot be assigned a null value:
+int? i = null; (nullable versions of primitive types)
+int y = x ?? 1; (fallback values for nulls)
+var relative = this?.uncle?.son?.wife?.Name; (null-conditional operations)
+var adam = people?[0];
+
+*******
+TOPIC 7a
+*******
+
+Contract is the agreement between the client and the supplier. Each party expects some benefits from the contract and is prepared to incur some obligations to obtain them. Benefit of the client is the obligation of the supplier, and vice versa
+A contract document between a client and a supplier protects both sides.
+No Hidden Clauses Rule: no requirement other than the obligations written in the contract can be imposed on a party to obtain the benefits
+
+One can think of pre and post conditions of a method as obligations and benefits of a contract between the client (the caller) and the supplier (the called procedure)
+
+@deal.post(lambda result: 0 <= result <= 1)
+def sin(x):
+	return 2
+
+The pre- and post-conditions are assertions, i.e. they are expressions which evaluate to true or false
+The precondition expresses the requirements that any call must satisfy
+The postcondition expresses the properties that are ensured at the end of the procedure execution
+
+A precondition violation would indicate a bug at the caller
+A postcondition violation would indicate a bug at the callee
+(they are not supposed to fail if the software is correct)
+
+A class invariant is an assertion that holds for all instances (objects) of the class (like a pre- and post- condition that applies to every method in the class simultaneously)
+
+Defensive programming is an approach that promotes putting checks in every module to detect unexpected situations (results in redundant checks - both caller and callee may check the same condition)
+
+Java assert statements:
+assert <condition>;
+assert <condition> : <message>;
+
+*******
+TOPIC 7b
+*******
+
+Aspect-oriented programming (AOP) addresses behaviours that span many, often unrelated, modules
+In AOP crosscutting concerns are implemented in aspects instead of fusing them into core modules
+
+Weaving rules specify how to integrate the final system
+
+AspectJ overview:
+Join points: places where crosscutting concerns can be woven in (ex. method call, field access, object creation)
+Pointcut: declaration that selects join points and collects contexts at that point
+Advice: code to be executed at a join point. Three types: before, after and around (using proceed())
+Aspect: unit of modularity. Can contain fields and methods like a regular Java class
+
+Any identifiable execution point: method body, method call, constructor body, constructor call, field access, catch block, class (static) initialization, object initialization, object pre-initialization, advice execution
+
+All join points have a context. Certain pointcuts can capture the context and pass it to the advice
+
+Pointcuts: can be named or anonymous
+[access-specifier] pointcut pointcut-name( [args] ) : pointcut-definition 
+The pointcut definition part consists of anonymous pointcuts, can use operators &&, || and ! within a pointcut definition
+
+Control-flow based pointcuts: capture all the join points within the control flow of a join point
+cflow(call(* Account.debit(..)))
+cflowbelow(call(* Account.debit(..)))
+
+Advice is a method-like construct that expresses the action to be taken at the join points that are captured by a pointcut: before advice, after advice, around advice (uses proceed())
+
+Policy enforcement: mechanism for ensuring that system components follow certain programming practices (e.g. enforce that public access to instance variables is prohibited)
+
+
+
+
+
+PROS/CONS OF DESIGN PATTERNS!!! REVISE IT IMPORTANT (but easy to find that's why it's not noted)
++ 4 end-lecture exercises
++ his files
++ 2 exams
++ review the notes
+
+
+

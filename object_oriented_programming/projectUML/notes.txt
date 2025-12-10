@@ -1,0 +1,8 @@
+# Set JavaFX path (adjust version number if different)
+$javafxPath = "C:\Java\javafx-sdk-25.0.1\lib"
+
+# Compile with JavaFX modules
+javac --module-path $javafxPath --add-modules javafx.controls,javafx.fxml HelloJavaFX.java
+
+# Run with JavaFX modules
+java --module-path $javafxPath --add-modules javafx.controls HelloJavaFX

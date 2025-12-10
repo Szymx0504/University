@@ -72,6 +72,7 @@ A%*%diag(A)
 diag(A)%*%A
 # f)
 invA=solve(A)
+invA
 round(A%*%invA)
 a=A[,3]
 b=A[2,]
@@ -79,3 +80,5 @@ class(b)
 b=as.matrix(b)
 a%*%b
 t(a)%*%t(b)
+
+
